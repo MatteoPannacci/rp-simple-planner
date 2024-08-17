@@ -2,14 +2,16 @@
 #include <iostream>
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
-#include "heuristic_map.h"
+#include "planner.hpp"
 
 
 nav_msgs::OccupancyGrid map;
+geometry_msgs::PoseStamped goal;
 
 
-void callback(const geometry_msgs::PoseStamped& goal) {
-    std::cout << "-- position read --" << std::endl;
+void goal_callback(const geometry_msgs::PoseStamped& new_goal) {
+    goal = new_goal;
+    std::cout << "-- goal read --" << std::endl;
 }
 
 
@@ -37,7 +39,7 @@ int main(int argc, char** argv) {
     }
 
     // subscribe to the goal topic
-    ros::Subscriber sub = nh.subscribe<const geometry_msgs::PoseStamped&>(goal_topic, 5, callback);
+    ros::Subscriber sub_goal = nh.subscribe<const geometry_msgs::PoseStamped&>(goal_topic, 5, goal_callback);
 
     // wait for messages
     ros::spin();

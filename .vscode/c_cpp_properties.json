@@ -4,7 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/ros/noetic/include/**"
+                "/opt/ros/noetic/include/**",
+                "/usr/include/eigen3",
+                "/usr/local/include/astar-algorithm-cpp/cpp"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
