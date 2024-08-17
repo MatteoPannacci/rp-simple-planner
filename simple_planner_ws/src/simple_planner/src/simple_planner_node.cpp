@@ -2,6 +2,7 @@
 #include <iostream>
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
+#include "heuristic_map.h"
 
 
 nav_msgs::OccupancyGrid map;
