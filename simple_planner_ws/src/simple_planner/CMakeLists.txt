@@ -9,6 +9,8 @@ project(simple_planner)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  nav_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simple_planner
-#  CATKIN_DEPENDS roscpp
+#  CATKIN_DEPENDS roscpp nav_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 
