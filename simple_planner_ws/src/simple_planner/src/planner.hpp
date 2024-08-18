@@ -21,6 +21,7 @@ public:
     int cost(int r, int c);
     void set(int r, int c, int value);
     void propagate_wall_cost(int r, int c);
+    int get_wall_cost();
 
 };
 
@@ -29,12 +30,14 @@ class SearchNode {
 
     int r;
     int c;
+    CostMap& map;
 
 public:
 
+    SearchNode(int r, int c, CostMap& map);
     float GoalDistanceEstimate(SearchNode& goal);
-    bool isGoal(SearchNode& node);
-    bool GetSuccessor(AStarSearch<SearchNode>* astarsearch, SearchNode *parent);
+    bool IsGoal(SearchNode& goal);
+    bool GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode *parent);
     float GetCost(SearchNode& node);
     bool IsSameState(SearchNode& other);
     size_t Hash();
@@ -52,8 +55,8 @@ class Planner {
 public:
 
     void set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost);
-    void set_start(const geometry_msgs::PoseStamped start);
-    void set_goal(const geometry_msgs::PoseStamped goal);
+    void set_start(const geometry_msgs::PoseStamped start_pose);
+    void set_goal(const geometry_msgs::PoseStamped goal_pose);
     void search();
 
 };

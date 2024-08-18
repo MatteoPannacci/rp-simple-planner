@@ -78,3 +78,108 @@ void CostMap::propagate_wall_cost(int r, int c) {
         } 
     }
 }
+
+
+
+SearchNode::SearchNode(int r, int c, CostMap& map):
+    r(r),
+    c(c),
+    map(map) {}
+
+
+bool SearchNode::IsSameState(SearchNode& other) {
+    if (r == other.r && c == other.c) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+size_t SearchNode::Hash() {
+    size_t h1 = hash<float>{}(r);
+    size_t h2 = hash<float>{}(c);
+    return h1 ^ (h2 << 1);
+}
+
+
+float SearchNode::GoalDistanceEstimate(SearchNode& goal) {
+    return abs(r - goal.r) + abs(c - goal.c);
+}
+
+
+bool SearchNode::IsGoal(SearchNode& goal) {
+    if (r == goal.r && c == goal.c) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+bool SearchNode::GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode *parent) {
+
+    int parent_r = parent->r;
+    int parent_c = parent->c;
+    CostMap& map = parent->map;
+
+    if (map.cost(r-1,c) < map.wall_cost) {
+        SearchNode child = SearchNode(r,c,map);
+        astarsearch->AddSuccessor(child);
+    }
+
+    if (map.cost(r+1,c) < map.wall_cost) {
+        SearchNode child = SearchNode(r,c,map);
+        astarsearch->AddSuccessor(child);
+    }
+
+    if (map.cost(r,c-1) < map.wall_cost) {
+        SearchNode child = SearchNode(r,c,map);
+        astarsearch->AddSuccessor(child);
+    }
+
+    if (map.cost(r,c+1) < map.wall_cost) {
+        SearchNode child = SearchNode(r,c,map);
+        astarsearch->AddSuccessor(child);
+    }
+    
+    return true;
+
+}
+
+
+float SearchNode::GetCost(SearchNode& successor) {
+    return (float) map.cost(r,c);
+}
+
+
+
+void Planner::set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost) {
+    CostMap map(grid, wall_cost);
+}
+
+
+void Planner::set_start(const geometry_msgs::PoseStamped start_pose) {
+    double x = start_pose.pose.position.x;
+    double y = start_pose.pose.position.y;    
+    int r = int(floor((x - map.origin.position.x) / map.resolution));
+    int c = int(floor((y - map.origin.position.y) / map.resolution));
+    SearchNode start(r,c,map);
+
+}
+
+
+void Planner::set_goal(const geometry_msgs::PoseStamped goal_pose) {
+    double x = goal_pose.pose.position.x;
+    double y = goal_pose.pose.position.y;    
+    int r = int(floor((x - map.origin.position.x) / map.resolution));
+    int c = int(floor((y - map.origin.position.y) / map.resolution));
+    SearchNode goal(r,c,map);
+}
+
+
+void Planner::search() {
+    return;
+}
