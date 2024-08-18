@@ -1,6 +1,17 @@
 #include "planner.hpp"
 
 
+CostMap::CostMap():
+    width(0),
+    height(0),
+    resolution(0),
+    origin(),
+    wall_cost(0)
+{
+    data = NULL;
+} 
+
+
 CostMap::CostMap(const nav_msgs::OccupancyGrid grid, const int wall_cost):
     width(grid.info.width),
     height(grid.info.height),
@@ -79,6 +90,12 @@ void CostMap::propagate_wall_cost(int r, int c) {
     }
 }
 
+
+
+SearchNode::SearchNode():
+    r(0),
+    c(0),
+    map() {}
 
 
 SearchNode::SearchNode(int r, int c, CostMap& map):
@@ -161,9 +178,9 @@ void Planner::set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost) {
 }
 
 
-void Planner::set_start(const geometry_msgs::PoseStamped start_pose) {
-    double x = start_pose.pose.position.x;
-    double y = start_pose.pose.position.y;    
+void Planner::set_start(const geometry_msgs::Point start_point) {
+    double x = start_point.x;
+    double y = start_point.y;
     int r = int(floor((x - map.origin.position.x) / map.resolution));
     int c = int(floor((y - map.origin.position.y) / map.resolution));
     SearchNode start(r,c,map);
@@ -171,15 +188,20 @@ void Planner::set_start(const geometry_msgs::PoseStamped start_pose) {
 }
 
 
-void Planner::set_goal(const geometry_msgs::PoseStamped goal_pose) {
-    double x = goal_pose.pose.position.x;
-    double y = goal_pose.pose.position.y;    
+void Planner::set_goal(const geometry_msgs::Point goal_point) {
+    double x = goal_point.x;
+    double y = goal_point.y;
     int r = int(floor((x - map.origin.position.x) / map.resolution));
     int c = int(floor((y - map.origin.position.y) / map.resolution));
     SearchNode goal(r,c,map);
 }
 
 
-void Planner::search() {
+void Planner::find_path() {
+    return;
+}
+
+
+nav_msgs::Path Planner::get_path() {
     return;
 }

@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   geometry_msgs
   cv_bridge
+  tf
 )
 
 find_package(OpenCV REQUIRED)
@@ -108,7 +109,7 @@ find_package(OpenCV REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simple_planner
-#  CATKIN_DEPENDS roscpp nav_msgs geometry_msgs cv_bridge
+#  CATKIN_DEPENDS roscpp nav_msgs geometry_msgs cv_bridge tf
 #  DEPENDS system_lib
 )
 

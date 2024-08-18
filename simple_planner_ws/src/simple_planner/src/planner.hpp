@@ -1,62 +1,69 @@
 #pragma once
 #include <nav_msgs/OccupancyGrid.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
 #include "stlastar.h"
 
 
 class CostMap {
 
-    const int width;
-    const int height;
-    const float resolution;
-    const geometry_msgs::Pose origin;
-    const int wall_cost;
-    int** data;
-
 public:
 
-    CostMap(const nav_msgs::OccupancyGrid grid, const int wall_cost);
+    int width;
+    int height;
+    float resolution;
+    geometry_msgs::Pose origin;
+    int wall_cost;
+    int** data;
+
+
+    CostMap();
+    CostMap(nav_msgs::OccupancyGrid grid, int wall_cost);
     ~CostMap();
 
     int cost(int r, int c);
     void set(int r, int c, int value);
     void propagate_wall_cost(int r, int c);
-    int get_wall_cost();
 
 };
 
 
 class SearchNode {
 
-    int r;
-    int c;
-    CostMap& map;
-
 public:
 
+    int r;
+    int c;
+    CostMap map;
+
+    SearchNode();
     SearchNode(int r, int c, CostMap& map);
     float GoalDistanceEstimate(SearchNode& goal);
     bool IsGoal(SearchNode& goal);
-    bool GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode *parent);
+    bool GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode* parent);
     float GetCost(SearchNode& node);
     bool IsSameState(SearchNode& other);
     size_t Hash();
-    void PrintNodeInfo(); // change with return coordinates
+    void PrintNodeInfo();
 
 };
 
 
 class Planner {
 
+public:
+
     CostMap map;
     SearchNode start;
     SearchNode goal;
+    nav_msgs::Path path;
 
-public:
 
-    void set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost);
-    void set_start(const geometry_msgs::PoseStamped start_pose);
-    void set_goal(const geometry_msgs::PoseStamped goal_pose);
-    void search();
+    void set_map(nav_msgs::OccupancyGrid grid, int wall_cost);
+    void set_start(geometry_msgs::Point start_point);
+    void set_goal(geometry_msgs::Point goal_point);
+    void find_path();
+    nav_msgs::Path get_path();
 
 };

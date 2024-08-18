@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
             pub.publish(msg);
             ros::spinOnce();
             loop_rate.sleep();
-            std::cout << "-- message published --" << std::to_string(msg.header.seq) << std::endl;
+            std::cout << "-- message published " << std::to_string(msg.header.seq) << " --" << std::endl;
             msg.header.seq += 1;
         }
     }
