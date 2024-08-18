@@ -11,7 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   nav_msgs
   geometry_msgs
+  cv_bridge
 )
+
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -105,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simple_planner
-#  CATKIN_DEPENDS roscpp nav_msgs geometry_msgs
+#  CATKIN_DEPENDS roscpp nav_msgs geometry_msgs cv_bridge
 #  DEPENDS system_lib
 )
 
@@ -118,12 +121,20 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  /usr/local/include/astar-algorithm-cpp/cpp
+  ${OpenCV_INCLUDE_DIRS}
+  /usr/include/eigen3
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/simple_planner.cpp
-# )
+add_library(grid_map_library SHARED
+  src/grid_map/grid_map.cpp
+  src/grid_map/draw_helpers.cpp)
+
+target_link_libraries(grid_map_library
+  ${OpenCV_LIBS}
+  )
+
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -133,8 +144,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(simple_planner_node src/simple_planner_node.cpp)
+add_executable(simple_planner_node src/simple_planner_node.cpp src/planner.cpp)
 add_executable(goal_publisher_node src/goal_publisher_node.cpp)
+add_executable(test_grid_map src/grid_map/test_grid_map.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,10 +161,16 @@ add_executable(goal_publisher_node src/goal_publisher_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(simple_planner_node
   ${catkin_LIBRARIES}
+  grid_map_library
 )
 target_link_libraries(goal_publisher_node
   ${catkin_LIBRARIES}
 )
+
+target_link_libraries(test_grid_map
+  ${OpenCV_LIBS}
+  grid_map_library
+  )
 
 #############
 ## Install ##

@@ -5,7 +5,7 @@
 #include "planner.hpp"
 
 
-nav_msgs::OccupancyGrid map;
+nav_msgs::OccupancyGrid occupancyMap;
 geometry_msgs::PoseStamped goal;
 
 
@@ -27,15 +27,26 @@ int main(int argc, char** argv) {
 
     // read the map (only once)
     std::cout << "-- waiting for map --" << std::endl;
-    auto sharedPtrMap = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(map_topic, nh);
-    if(sharedPtrMap == NULL) {
+    auto sharedPtrOccupancyMap = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(map_topic, nh);
+    if(sharedPtrOccupancyMap == NULL) {
         std::cout << "-- no map received --" << std::endl;
         std::cout << "-- terminating --" << std::endl;
         return 0;
     }
     else {
-        map = *sharedPtrMap;
+        occupancyMap = *sharedPtrOccupancyMap;
         std::cout << "-- map read --" << std::endl;
+    }
+
+    std::cout << "-- start creating map --" << std::endl;
+    CostMap costmap(occupancyMap, 10);
+    std::cout << "-- finish creating map --" << std::endl;
+
+    
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            std::cout << i << " " << j << " " << costmap.cost(i,j) << std::endl;
+        }
     }
 
     // subscribe to the goal topic
