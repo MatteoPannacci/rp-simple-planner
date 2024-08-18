@@ -1,6 +1,7 @@
 #pragma once
 #include "grid.h"
 #include "draw_helpers.h"
+#include <nav_msgs/OccupancyGrid.h>
 
 using Affine2f = Eigen::Transform<float, 2, Eigen::Affine>;
 
@@ -50,8 +51,11 @@ struct GridMap: public Grid_<uint8_t>, public GridMapping{
   // loads a map from an image
   void loadFromImage(const char* filename, float resolution);
 
-  GridMap(float resolution, int rows=0, int cols=0);
+  void loadFromOccupancyGrid(nav_msgs::OccupancyGrid grid);
 
+  GridMap();
+
+  GridMap(float resolution, int rows=0, int cols=0);
  
   bool scanRay(Vector2f& hit, const Vector2f& origin, const Vector2f& direction,
                const float max_range) const;

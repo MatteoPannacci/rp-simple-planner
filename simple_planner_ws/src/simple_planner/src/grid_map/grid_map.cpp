@@ -1,10 +1,19 @@
 #include "grid_map.h"
+
 using namespace std;
+
+
+GridMap::GridMap():
+  Grid_<uint8_t>(0, 0) {
+    reset(Vector2f(0,0), 1);
+  }
+
 
 GridMap::GridMap(float resolution_, int rows_, int cols_):
   Grid_<uint8_t>(rows_, cols_){
-  reset(Vector2f(0,0), resolution_);
+    reset(Vector2f(0,0), resolution_);
 }
+
 
 float GridMap::scanRay(const Vector2f& origin,
                         const Vector2f& direction,
@@ -26,8 +35,9 @@ float GridMap::scanRay(const Vector2f& origin,
   return max_range;
 }
 
+
 void GridMap::loadFromImage(const char* filename, float res) {
-    cerr << "loading [" << filename << "]" << endl;
+  cerr << "loading [" << filename << "]" << endl;
   cv::Mat m = cv::imread(filename);
   if (m.rows == 0) {
     throw std::runtime_error("unable to load image");
@@ -37,4 +47,21 @@ void GridMap::loadFromImage(const char* filename, float res) {
   resize(loaded_image.rows, loaded_image.cols);
   reset(Vector2f(0,0), res);
   memcpy(&cells[0], loaded_image.data, cells.size());
+}
+
+
+void GridMap::loadFromOccupancyGrid(nav_msgs::OccupancyGrid grid) {
+  int rows = grid.info.height;
+  int cols = grid.info.width;
+  float res = grid.info.resolution;
+  Vector2f origin(grid.info.origin.position.x, grid.info.origin.position.y);
+  std::vector<int8_t> int_vector = grid.data;
+  std::vector<uint8_t> uint_vector(int_vector.begin(), int_vector.end());
+  cv::Mat m(rows, cols, CV_8UC1, uint_vector.data());
+  cv::Mat negative_image = 255 - m*2;
+  cv::Mat flipped_image;
+  cv::flip(negative_image, flipped_image, 0);
+  resize(flipped_image.rows, flipped_image.cols);
+  reset(origin, res);
+  memcpy(&cells[0], flipped_image.data, cells.size());
 }

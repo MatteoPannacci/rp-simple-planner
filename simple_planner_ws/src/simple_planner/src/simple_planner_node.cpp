@@ -4,9 +4,10 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf/transform_listener.h>
 #include "planner.hpp"
+#include "grid_map/grid_map.h"
 
 
-nav_msgs::OccupancyGrid occupancyMap;
+nav_msgs::OccupancyGrid occupancyGrid;
 geometry_msgs::Point goal;
 geometry_msgs::Point start;
 
@@ -27,14 +28,14 @@ int main(int argc, char** argv) {
 
     // read the map
     std::cout << "-- waiting for map --" << std::endl;
-    auto sharedPtrOccupancyMap = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(map_topic, nh);
-    if(sharedPtrOccupancyMap == NULL) {
+    auto sharedPtrOccupancyGrid = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(map_topic, nh);
+    if(sharedPtrOccupancyGrid == NULL) {
         std::cout << "-- no map received --" << std::endl;
         std::cout << "-- terminating --" << std::endl;
         return 0;
     }
     else {
-        occupancyMap = *sharedPtrOccupancyMap;
+        occupancyGrid = *sharedPtrOccupancyGrid;
         std::cout << "-- map read --" << std::endl;
     }
 
@@ -74,7 +75,14 @@ int main(int argc, char** argv) {
 
 
     std::cout << "-- start creating map --" << std::endl;
-    CostMap costmap(occupancyMap, 10);
+    CostMap costmap(occupancyGrid, 10);
     std::cout << "-- finish creating map --" << std::endl;
 
+
+    GridMap grid_map;
+    grid_map.loadFromOccupancyGrid(occupancyGrid);
+    Canvas canvas;
+    grid_map.draw(canvas);
+    showCanvas(canvas, 0);
+    
 }
