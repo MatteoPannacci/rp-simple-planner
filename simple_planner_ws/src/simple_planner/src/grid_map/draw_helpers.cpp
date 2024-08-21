@@ -31,6 +31,16 @@ void drawFilledCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, c
 }
 
 
+void drawPath(Canvas& dest, const std::vector<Eigen::Vector2f>& path, cv::viz::Color color) {
+  std::size_t lenght = path.size();
+  for(std::size_t i = 0; i < lenght-2; i++) {
+    Eigen::Vector2f p1 = path.at(i);
+    Eigen::Vector2f p2 = path.at(i+1);
+    drawLine(dest, p1, p2, color);
+  }
+}
+
+
 int showCanvas(Canvas& canvas, int timeout_ms) {
   cv::imshow("canvas", canvas);
   int key = cv::waitKey(timeout_ms);

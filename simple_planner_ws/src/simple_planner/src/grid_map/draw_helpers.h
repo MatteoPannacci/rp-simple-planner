@@ -11,4 +11,5 @@ void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t
 void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, cv::viz::Color color);
 void drawFilledCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t color);
 void drawFilledCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, cv::viz::Color color);
+void drawPath(Canvas& dest, const std::vector<Eigen::Vector2f>& path, cv::viz::Color color);
 int showCanvas(Canvas& canvas, int timeout_ms);
