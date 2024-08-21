@@ -10,6 +10,7 @@
 nav_msgs::OccupancyGrid occupancyGrid;
 geometry_msgs::Point goal;
 geometry_msgs::Point start;
+nav_msgs::Path path;
 
 
 int main(int argc, char** argv) {
@@ -79,6 +80,8 @@ int main(int argc, char** argv) {
     std::cout << "-- finish creating map --" << std::endl;
 
 
+    // visualization
+
     GridMap grid_map;
     grid_map.loadFromOccupancyGrid(occupancyGrid);
     Canvas canvas;
@@ -89,6 +92,14 @@ int main(int argc, char** argv) {
 
     drawFilledCircle(canvas, grid_start, 10, cv::viz::Color::green());
     drawFilledCircle(canvas, grid_goal, 10, cv::viz::Color::red());
+
+    std::vector<Vector2f> grid_path;
+    for(geometry_msgs::PoseStamped pose_stamped: path.poses) {
+        geometry_msgs::Pose pose = pose_stamped.pose;
+        Vector2f grid_pose = grid_map.world2grid(Vector2f(pose.position.x, pose.position.y));
+    }
+
+    drawPath(canvas, grid_path, cv::viz::Color::amethyst());
 
     showCanvas(canvas, 0);
     
