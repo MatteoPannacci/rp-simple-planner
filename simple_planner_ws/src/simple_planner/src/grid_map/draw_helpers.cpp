@@ -1,14 +1,35 @@
 #include "draw_helpers.h"
 
+
 void drawLine(Canvas& dest, const Eigen::Vector2f& p0, const Eigen::Vector2f& p1, uint8_t color) {
-  cv::line(dest, cv::Point(p0[0], p0[1]), cv::Point(p1[0], p1[1]),
-           cv::Scalar(color, color, color), 1);
+  cv::line(dest, cv::Point(p0[0], p0[1]), cv::Point(p1[0], p1[1]), cv::Scalar(color, color, color), 1);
 }
 
-void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t color) {
-  cv::circle(dest, cv::Point(center[0], center[1]), radius,
-             cv::Scalar(color, color, color));
+
+void drawLine(Canvas& dest, const Eigen::Vector2f& p0, const Eigen::Vector2f& p1, cv::viz::Color color) {
+  cv::line(dest, cv::Point(p0[0], p0[1]), cv::Point(p1[0], p1[1]), color, 1);
 }
+
+
+void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t color) {
+  cv::circle(dest, cv::Point(center[0], center[1]), radius, cv::Scalar(color, color, color));
+}
+
+
+void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, cv::viz::Color color) {
+  cv::circle(dest, cv::Point(center[0], center[1]), radius, color);
+}
+
+
+void drawFilledCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t color) {
+  cv::circle(dest, cv::Point(center[0], center[1]), radius, cv::Scalar(color, color, color), cv::FILLED);
+}
+
+
+void drawFilledCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, cv::viz::Color color) {
+  cv::circle(dest, cv::Point(center[0], center[1]), radius, color, cv::FILLED);
+}
+
 
 int showCanvas(Canvas& canvas, int timeout_ms) {
   cv::imshow("canvas", canvas);

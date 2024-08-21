@@ -136,13 +136,18 @@ struct Grid_{
         lower=std::min(lower, v);
         upper=std::max(upper, v);
       }
-      scale=255.f / (upper-lower);
+      scale = 255.f / (upper-lower);
     }
 
-    dest = cv::Mat(rows, cols, CV_8UC1);
-    uint8_t* dest_ptr=(uint8_t*) dest.data;
+    Canvas gray_dest = cv::Mat(rows, cols, CV_8UC1);
+    uint8_t* gray_dest_ptr=(uint8_t*) gray_dest.data;
     for (size_t i=0; i<cells.size(); ++i)
-      dest_ptr[i] = scale*(cells[i]-lower);
+      gray_dest_ptr[i] = scale*(cells[i]-lower);
+
+    Canvas bgr_dest;
+    cv::cvtColor(gray_dest, bgr_dest, cv::COLOR_GRAY2BGR);
+    dest = bgr_dest;
+
   }
 
   int rows;
