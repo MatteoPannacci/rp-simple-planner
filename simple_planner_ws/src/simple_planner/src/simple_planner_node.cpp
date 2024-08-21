@@ -83,6 +83,13 @@ int main(int argc, char** argv) {
     grid_map.loadFromOccupancyGrid(occupancyGrid);
     Canvas canvas;
     grid_map.draw(canvas);
+
+    Vector2f grid_start = grid_map.world2grid(Vector2f(start.x, start.y));
+    Vector2f grid_goal = grid_map.world2grid(Vector2f(goal.x, goal.y));
+
+    drawFilledCircle(canvas, grid_start, 10, cv::viz::Color::green());
+    drawFilledCircle(canvas, grid_goal, 10, cv::viz::Color::red());
+
     showCanvas(canvas, 0);
     
 }
