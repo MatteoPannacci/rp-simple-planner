@@ -3,7 +3,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <tf/transform_listener.h>
-#include "planner.hpp"
+#include "planner.h"
 #include "grid_map/grid_map.h"
 
 
@@ -80,25 +80,24 @@ int main(int argc, char** argv) {
     std::cout << "-- finish creating map --" << std::endl;
 
 
-    // visualization
-
+    // visualization of the map
     GridMap grid_map;
     grid_map.loadFromOccupancyGrid(occupancyGrid);
     Canvas canvas;
     grid_map.draw(canvas);
 
+    // visualization of start and goal
     Vector2f grid_start = grid_map.world2grid(Vector2f(start.x, start.y));
     Vector2f grid_goal = grid_map.world2grid(Vector2f(goal.x, goal.y));
-
     drawFilledCircle(canvas, grid_start, 10, cv::viz::Color::green());
     drawFilledCircle(canvas, grid_goal, 10, cv::viz::Color::red());
 
+    // visualization of the path
     std::vector<Vector2f> grid_path;
     for(geometry_msgs::PoseStamped pose_stamped: path.poses) {
         geometry_msgs::Pose pose = pose_stamped.pose;
         Vector2f grid_pose = grid_map.world2grid(Vector2f(pose.position.x, pose.position.y));
     }
-
     drawPath(canvas, grid_path, cv::viz::Color::amethyst());
 
     showCanvas(canvas, 0);
