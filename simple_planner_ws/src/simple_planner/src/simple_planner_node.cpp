@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
     // create planner
     Planner planner;
-    planner.set_map(occupancyGrid, 10);
+    planner.set_map(occupancyGrid, 10, 1, 1);
     planner.set_start(start_point);
     planner.set_goal(goal_point);
 
@@ -118,14 +118,6 @@ int main(int argc, char** argv) {
         grid_path.push_back(grid_pose);
     }
     drawPath(canvas, grid_path, cv::viz::Color::amethyst());
-
-    for(int i = 0; i < planner.map->width; i++) {
-        for(int j = 0; j < planner.map->height; j++) {
-            if(planner.map->cost(i,j) >= planner.map->wall_cost) {
-                drawFilledCircle(canvas, Eigen::Vector2f(i,j), 1, cv::viz::Color::red());
-            }
-        }
-    }
 
     // create image
     showCanvas(canvas, 0);

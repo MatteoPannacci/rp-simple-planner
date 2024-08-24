@@ -12,12 +12,14 @@ CostMap::CostMap():
 } 
 
 
-CostMap::CostMap(const nav_msgs::OccupancyGrid grid, const int wall_cost):
+CostMap::CostMap(const nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cost_decay, int step_cost):
     width(grid.info.width),
     height(grid.info.height),
     resolution(grid.info.resolution),
     origin(grid.info.origin),
-    wall_cost(wall_cost) 
+    wall_cost(wall_cost),
+    wall_cost_decay(wall_cost_decay),
+    step_cost(step_cost)
 {
     data = new int*[width]();
     for(int i = 0; i < width; i++) {
@@ -51,7 +53,7 @@ CostMap::~CostMap() {
 
 int CostMap::cost(int r, int c) {
     if(r < 0 || r >= width || c < 0 || c >= height) {
-        return wall_cost+1;
+        return wall_cost+wall_cost_decay;
     }
     else {
         return data[r][c];
@@ -76,19 +78,19 @@ void CostMap::propagate_wall_cost(int r, int c) {
     else {
         int curr = cost(r,c);
         if(cost(r+1,c) < curr) {
-            set(r+1,c, curr-1);
+            set(r+1,c, curr-wall_cost_decay);
             propagate_wall_cost(r+1,c);
         }
         if(cost(r-1,c) < curr) {
-            set(r-1,c, curr-1);
+            set(r-1,c, curr-wall_cost_decay);
             propagate_wall_cost(r-1,c);
         }
         if(cost(r,c+1) < curr) {
-            set(r,c+1, curr-1);
+            set(r,c+1, curr-wall_cost_decay);
             propagate_wall_cost(r,c+1);
         }
         if(cost(r,c-1) < curr) {
-            set(r,c-1, curr-1);
+            set(r,c-1, curr-wall_cost_decay);
             propagate_wall_cost(r,c-1);
         } 
     }
@@ -175,17 +177,17 @@ bool SearchNode::GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode*
 
 
 float SearchNode::GetCost(SearchNode& successor) {
-    return (float) map->cost(r,c);
+    return (float) map->cost(r,c) + map->step_cost;
 }
 
 
 
-void Planner::set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost) {
-    map = new CostMap(grid, wall_cost);
+void Planner::set_map(nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cost_decay, int step_cost) {
+    map = new CostMap(grid, wall_cost, wall_cost_decay, step_cost);
 }
 
 
-void Planner::set_start(const geometry_msgs::Point start_point) {
+void Planner::set_start(geometry_msgs::Point start_point) {
     Eigen::Vector2f start_vector(start_point.x, start_point.y);
     Eigen::Vector2f start_grid_vector = map->world2grid(start_vector);
     int r = (int) floor(start_grid_vector[0]);
@@ -194,7 +196,7 @@ void Planner::set_start(const geometry_msgs::Point start_point) {
 }
 
 
-void Planner::set_goal(const geometry_msgs::Point goal_point) {
+void Planner::set_goal(geometry_msgs::Point goal_point) {
     Eigen::Vector2f goal_vector(goal_point.x, goal_point.y);
     Eigen::Vector2f goal_grid_vector = map->world2grid(goal_vector);
     int r = (int) floor(goal_grid_vector[0]);

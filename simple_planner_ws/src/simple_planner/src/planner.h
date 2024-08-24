@@ -16,11 +16,13 @@ public:
     float resolution;
     geometry_msgs::Pose origin;
     int wall_cost;
+    int wall_cost_decay;
+    int step_cost;
     int** data;
 
 
     CostMap();
-    CostMap(nav_msgs::OccupancyGrid grid, int wall_cost);
+    CostMap(nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cost_decay, int step_cost);
     ~CostMap();
 
     int cost(int r, int c);
@@ -61,7 +63,7 @@ public:
     std::vector<std::array<int,2>> path;
 
 
-    void set_map(nav_msgs::OccupancyGrid grid, int wall_cost);
+    void set_map(nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cost_decay, int step_cost);
     void set_start(geometry_msgs::Point start_point);
     void set_goal(geometry_msgs::Point goal_point);
     void find_path();
