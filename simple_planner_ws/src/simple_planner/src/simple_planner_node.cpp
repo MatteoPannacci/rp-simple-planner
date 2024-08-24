@@ -7,13 +7,10 @@
 #include "grid_map/grid_map.h"
 
 
-nav_msgs::OccupancyGrid occupancyGrid;
-geometry_msgs::Point goal;
-geometry_msgs::Point start;
-nav_msgs::Path path;
-
-
 int main(int argc, char** argv) {
+
+
+    // INITIALIZATION //
 
     // initialize the node
     ros::init(argc, argv, "simple_planner");
@@ -27,7 +24,10 @@ int main(int argc, char** argv) {
     std::string source = "odom";
 
 
+    // READING INPUT MESSAGES //
+
     // read the map
+    nav_msgs::OccupancyGrid occupancyGrid;
     std::cout << "-- waiting for map --" << std::endl;
     auto sharedPtrOccupancyGrid = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(map_topic, nh);
     if(sharedPtrOccupancyGrid == NULL) {
@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
     }
 
     // read the goal
+    geometry_msgs::Point goal_point;
     std::cout << "-- waiting for goal --" << std::endl;
     auto sharedPtrGoal = ros::topic::waitForMessage<geometry_msgs::PoseStamped>(goal_topic, nh);
     if(sharedPtrGoal == NULL) {
@@ -49,17 +50,18 @@ int main(int argc, char** argv) {
         return 0;
     }
     else {
-        goal = (*sharedPtrGoal).pose.position;
+        goal_point = (*sharedPtrGoal).pose.position;
         std::cout << "-- goal read --" << std::endl;
-        std::cout << goal << std::endl;
+        std::cout << goal_point << std::endl;
     }
 
     // read the start
+    geometry_msgs::Point start_point;
     std::cout << "-- waiting for start --" << std::endl;
     tf::StampedTransform transform;
     tf::TransformListener listener;
     try {
-        listener.waitForTransform(target, source, ros::Time(0), ros::Duration(3.0));
+        listener.waitForTransform(target, source, ros::Time(0), ros::Duration(30.0));
         listener.lookupTransform(target, source, ros::Time(0), transform);
     }
     catch(...) {
@@ -67,18 +69,31 @@ int main(int argc, char** argv) {
         std::cout << "-- terminating --" << std::endl;
         return 0;
     }
-    start = geometry_msgs::Point();
-    start.x = transform.getOrigin().getX();
-    start.y = transform.getOrigin().getY();
-    start.z = transform.getOrigin().getZ();
+    start_point.x = transform.getOrigin().getX();
+    start_point.y = transform.getOrigin().getY();
+    start_point.z = transform.getOrigin().getZ();
     std::cout << "-- start read --" << std::endl;
-    std::cout << start << std::endl;
+    std::cout << start_point << std::endl;
 
 
-    std::cout << "-- start creating map --" << std::endl;
-    CostMap costmap(occupancyGrid, 10);
-    std::cout << "-- finish creating map --" << std::endl;
+    // PLANNING //
 
+    // create planner
+    Planner planner;
+    planner.set_map(occupancyGrid, 10);
+    planner.set_start(start_point);
+    planner.set_goal(goal_point);
+
+    // find path
+    planner.find_path();
+    nav_msgs::Path path = planner.get_path();
+
+    if(path.poses.size() == 0) {
+        std::cout << "path not found" << std::endl;
+    }
+
+
+    // VISUALIZATION //
 
     // visualization of the map
     GridMap grid_map;
@@ -87,19 +102,32 @@ int main(int argc, char** argv) {
     grid_map.draw(canvas);
 
     // visualization of start and goal
-    Vector2f grid_start = grid_map.world2grid(Vector2f(start.x, start.y));
-    Vector2f grid_goal = grid_map.world2grid(Vector2f(goal.x, goal.y));
+    Eigen::Vector2f start_vector(start_point.x, start_point.y);
+    Eigen::Vector2f goal_vector(goal_point.x, goal_point.y);
+    Eigen::Vector2f grid_start = grid_map.world2grid(start_vector);
+    Eigen::Vector2f grid_goal = grid_map.world2grid(goal_vector);
     drawFilledCircle(canvas, grid_start, 10, cv::viz::Color::green());
     drawFilledCircle(canvas, grid_goal, 10, cv::viz::Color::red());
 
     // visualization of the path
-    std::vector<Vector2f> grid_path;
+    std::vector<Eigen::Vector2f> grid_path;
     for(geometry_msgs::PoseStamped pose_stamped: path.poses) {
         geometry_msgs::Pose pose = pose_stamped.pose;
-        Vector2f grid_pose = grid_map.world2grid(Vector2f(pose.position.x, pose.position.y));
+        Eigen::Vector2f pose_vector(pose.position.x, pose.position.y);
+        Eigen::Vector2f grid_pose = grid_map.world2grid(pose_vector);
+        grid_path.push_back(grid_pose);
     }
     drawPath(canvas, grid_path, cv::viz::Color::amethyst());
 
+    for(int i = 0; i < planner.map->width; i++) {
+        for(int j = 0; j < planner.map->height; j++) {
+            if(planner.map->cost(i,j) >= planner.map->wall_cost) {
+                drawFilledCircle(canvas, Eigen::Vector2f(i,j), 1, cv::viz::Color::red());
+            }
+        }
+    }
+
+    // create image
     showCanvas(canvas, 0);
     
 }
