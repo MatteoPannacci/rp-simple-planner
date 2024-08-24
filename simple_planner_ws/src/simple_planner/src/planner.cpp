@@ -208,7 +208,7 @@ void Planner::set_goal(geometry_msgs::Point goal_point) {
 void Planner::find_path() {
 
     path = std::vector<array<int,2>>();
-    AStarSearch<SearchNode> astarsearch(10000);
+    AStarSearch<SearchNode> astarsearch(100000);
     astarsearch.SetStartAndGoalStates(start, goal);
     unsigned int SearchState;
     int counter = 0;

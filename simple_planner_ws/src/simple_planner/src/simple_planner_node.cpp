@@ -12,6 +12,26 @@ int main(int argc, char** argv) {
 
     // INITIALIZATION //
 
+    // reading arguments
+    int wall_cost, wall_cost_decay, step_cost;
+    if(argc == 1) {
+        wall_cost = 10;
+        wall_cost_decay = 1;
+        step_cost = 1;
+    }
+    else if(argc == 4) {
+        wall_cost = std::stoi(std::string(argv[1]));
+        wall_cost_decay = std::stoi(std::string(argv[2]));
+        step_cost = std::stoi(std::string(argv[3]));
+    }
+    else {
+        std::cout << "follow this format: 'simple_planner node <wall_cost>"
+                     "<wall_cost_decay> <step_cost>'." << std::endl;
+        std::cout << "otherwise don't specify parameters to use the default values:" 
+                     "wall_cost=10, wall_cost_decay=1, step_cost=1" << std::endl;
+        return 0;
+    }
+
     // initialize the node
     ros::init(argc, argv, "simple_planner");
 
@@ -80,7 +100,7 @@ int main(int argc, char** argv) {
 
     // create planner
     Planner planner;
-    planner.set_map(occupancyGrid, 10, 1, 1);
+    planner.set_map(occupancyGrid, wall_cost, wall_cost_decay, step_cost);
     planner.set_start(start_point);
     planner.set_goal(goal_point);
 
