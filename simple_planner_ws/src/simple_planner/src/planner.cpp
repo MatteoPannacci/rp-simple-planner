@@ -19,26 +19,30 @@ CostMap::CostMap(const nav_msgs::OccupancyGrid grid, const int wall_cost):
     origin(grid.info.origin),
     wall_cost(wall_cost) 
 {
-    data = new int*[height]();
-    for(int i = 0; i < height; i++) {
-        data[i] = new int[width]();
+    data = new int*[width]();
+    for(int i = 0; i < width; i++) {
+        data[i] = new int[height]();
     }
 
-    // map_server OccupancyGrid values can be 0, 100 or -1
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             if(grid.data[i*width+j] == 100) {
-                set(i,j, wall_cost);
-                propagate_wall_cost(i,j);
+                set(j,height-i-1, wall_cost);
+                propagate_wall_cost(j,height-i-1);
             } 
         }
     }
 
+    reset(Eigen::Vector2f(origin.position.x, origin.position.y), resolution);
+
 }
 
 
+
+
+
 CostMap::~CostMap() {
-    for(int i = 0; i < height; i++) {
+    for(int i = 0; i < width; i++) {
         delete[] data[i];
     }
     delete[] data;
@@ -46,7 +50,7 @@ CostMap::~CostMap() {
 
 
 int CostMap::cost(int r, int c) {
-    if(r < 0 || r >= height || c < 0 || c >= width) {
+    if(r < 0 || r >= width || c < 0 || c >= height) {
         return wall_cost+1;
     }
     else {
@@ -56,7 +60,7 @@ int CostMap::cost(int r, int c) {
 
 
 void CostMap::set(int r, int c, int value) {
-    if(r < 0 || r >= height || c < 0 || c >= width) {
+    if(r < 0 || r >= width || c < 0 || c >= height) {
         return;
     }
     else {
@@ -66,11 +70,11 @@ void CostMap::set(int r, int c, int value) {
 
 
 void CostMap::propagate_wall_cost(int r, int c) {
-    if(r < 0 || r >= height || c < 0 || c >= width) {
+    if(r < 0 || r >= width || c < 0 || c >= height) {
         return;
     }
     else {
-        int curr = data[r][c];
+        int curr = cost(r,c);
         if(cost(r+1,c) < curr) {
             set(r+1,c, curr-1);
             propagate_wall_cost(r+1,c);
@@ -98,7 +102,7 @@ SearchNode::SearchNode():
     map() {}
 
 
-SearchNode::SearchNode(int r, int c, CostMap& map):
+SearchNode::SearchNode(int r, int c, CostMap* map):
     r(r),
     c(c),
     map(map) {}
@@ -136,29 +140,32 @@ bool SearchNode::IsGoal(SearchNode& goal) {
 }
 
 
-bool SearchNode::GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode *parent) {
+bool SearchNode::GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode* parent) {
 
-    int parent_r = parent->r;
-    int parent_c = parent->c;
-    CostMap& map = parent->map;
+    int parent_r = -1;
+    int parent_c = -1;
+    if(parent) {
+        int parent_r = parent->r;
+        int parent_c = parent->c;
+    }
 
-    if (map.cost(r-1,c) < map.wall_cost) {
-        SearchNode child = SearchNode(r,c,map);
+    if ((map->cost(r-1,c) < map->wall_cost) && !((parent_r == r-1) && (parent_c == c))) {
+        SearchNode child = SearchNode(r-1,c,map);
         astarsearch->AddSuccessor(child);
     }
 
-    if (map.cost(r+1,c) < map.wall_cost) {
-        SearchNode child = SearchNode(r,c,map);
+    if ((map->cost(r+1,c) < map->wall_cost) && !((parent_r == r+1) && (parent_c == c))) {
+        SearchNode child = SearchNode(r+1,c,map);
         astarsearch->AddSuccessor(child);
     }
 
-    if (map.cost(r,c-1) < map.wall_cost) {
-        SearchNode child = SearchNode(r,c,map);
+    if ((map->cost(r,c-1) < map->wall_cost) && !((parent_r == r) && (parent_c == c-1))) {
+        SearchNode child = SearchNode(r,c-1,map);
         astarsearch->AddSuccessor(child);
     }
 
-    if (map.cost(r,c+1) < map.wall_cost) {
-        SearchNode child = SearchNode(r,c,map);
+    if ((map->cost(r,c+1) < map->wall_cost) && !((parent_r == r) && (parent_c == c+1))) {
+        SearchNode child = SearchNode(r,c+1,map);
         astarsearch->AddSuccessor(child);
     }
     
@@ -168,40 +175,81 @@ bool SearchNode::GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode 
 
 
 float SearchNode::GetCost(SearchNode& successor) {
-    return (float) map.cost(r,c);
+    return (float) map->cost(r,c);
 }
 
 
 
 void Planner::set_map(const nav_msgs::OccupancyGrid grid, const int wall_cost) {
-    CostMap map(grid, wall_cost);
+    map = new CostMap(grid, wall_cost);
 }
 
 
 void Planner::set_start(const geometry_msgs::Point start_point) {
-    double x = start_point.x;
-    double y = start_point.y;
-    int r = int(floor((x - map.origin.position.x) / map.resolution));
-    int c = int(floor((y - map.origin.position.y) / map.resolution));
-    SearchNode start(r,c,map);
-
+    Eigen::Vector2f start_vector(start_point.x, start_point.y);
+    Eigen::Vector2f start_grid_vector = map->world2grid(start_vector);
+    int r = (int) floor(start_grid_vector[0]);
+    int c = (int) floor(start_grid_vector[1]);
+    start = SearchNode(r,c,map);
 }
 
 
 void Planner::set_goal(const geometry_msgs::Point goal_point) {
-    double x = goal_point.x;
-    double y = goal_point.y;
-    int r = int(floor((x - map.origin.position.x) / map.resolution));
-    int c = int(floor((y - map.origin.position.y) / map.resolution));
-    SearchNode goal(r,c,map);
+    Eigen::Vector2f goal_vector(goal_point.x, goal_point.y);
+    Eigen::Vector2f goal_grid_vector = map->world2grid(goal_vector);
+    int r = (int) floor(goal_grid_vector[0]);
+    int c = (int) floor(goal_grid_vector[1]);
+    goal = SearchNode(r,c,map);
 }
 
 
 void Planner::find_path() {
-    return;
+
+    path = std::vector<array<int,2>>();
+    AStarSearch<SearchNode> astarsearch(10000);
+    astarsearch.SetStartAndGoalStates(start, goal);
+    unsigned int SearchState;
+    int counter = 0;
+    
+    do {
+        SearchState = astarsearch.SearchStep();
+        counter++;
+        if(counter%100 == 0) {
+            std::cout << "iteration n. " << counter << std::endl;
+        }
+    } while(SearchState == AStarSearch<SearchNode>::SEARCH_STATE_SEARCHING);
+
+    if(SearchState == AStarSearch<SearchNode>::SEARCH_STATE_SUCCEEDED) {
+        SearchNode* node = astarsearch.GetSolutionStart();
+        while(node != NULL) {
+            std::array<int,2> coord{node->r, node->c};
+            path.push_back(coord);
+            std::cout << "coord: " << node->r << " " << node->c << std::endl;
+            std::cout << "cost: " << map->cost(node->r, node->c) <<  std::endl << std::endl;
+            node = astarsearch.GetSolutionNext();
+        }
+    }
+
 }
 
 
 nav_msgs::Path Planner::get_path() {
-    return;
+
+    nav_msgs::Path path_message;
+    int lenght = path.size();
+    std::vector<geometry_msgs::PoseStamped> poses;
+
+    for(int i = 0; i < lenght; i++) {
+        geometry_msgs::PoseStamped pose_stamped;
+        Eigen::Vector2f grid_position_vector(path[i][0], path[i][1]);
+        Eigen::Vector2f world_position_vector;
+        world_position_vector = map->grid2world(grid_position_vector);
+        pose_stamped.pose.position.x = world_position_vector[0];
+        pose_stamped.pose.position.y = world_position_vector[1];
+        poses.push_back(pose_stamped);
+    }
+    path_message.poses = poses;
+
+    return path_message;
+
 }

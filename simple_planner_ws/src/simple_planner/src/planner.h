@@ -4,9 +4,10 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
 #include "stlastar.h"
+#include "grid_map/grid_map.h"
 
 
-class CostMap {
+class CostMap: public GridMapping {
 
 public:
 
@@ -35,10 +36,10 @@ public:
 
     int r;
     int c;
-    CostMap map;
+    CostMap* map;
 
     SearchNode();
-    SearchNode(int r, int c, CostMap& map);
+    SearchNode(int r, int c, CostMap* map);
     float GoalDistanceEstimate(SearchNode& goal);
     bool IsGoal(SearchNode& goal);
     bool GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode* parent);
@@ -54,10 +55,10 @@ class Planner {
 
 public:
 
-    CostMap map;
+    CostMap* map;
     SearchNode start;
     SearchNode goal;
-    nav_msgs::Path path;
+    std::vector<std::array<int,2>> path;
 
 
     void set_map(nav_msgs::OccupancyGrid grid, int wall_cost);
