@@ -9,13 +9,23 @@ Implementation of a simple 2D planner node for ROS in C++. This project is part 
 
 2)  add the package to the catkin setup directories
 
+        source ./devel/setup.bash
+
 3)  run the roscore node
+
+        roscore
 
 4)  run the stage_ros node
 
+        rosrun stage_ros stageros ./data/cappero.world
+
 5)  run the map_server node
 
+        rosrun map_server map_server ./data/cappero.yaml
+
 6)  run the goal_publisher_node node
+
+        rosrun simple_planner goal_publisher_node \<goal_x\> \<goal_y\> \<frequency\>
 
 7)  run the simple_planner_node node
 
@@ -24,10 +34,8 @@ Implementation of a simple 2D planner node for ROS in C++. This project is part 
 
 ## Requirements
 
-...
+To compile and run the code the following
 
-
-
-
-
-The A* algorithm implementation is from [text](https://github.com/justinhj/astar-algorithm-cpp)
+*   [ROS noetic](https://wiki.ros.org/noetic)
+*   [The ROS Navigation Stack](https://github.com/ros-planning/navigation) (for the map_server node)
+*   [justinhj's A* implementation](https://github.com/justinhj/astar-algorithm-cpp) (for the stlastar.h)
