@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
             wall_cost = std::stoi(std::string(argv[1]));
             wall_cost_decay = std::stoi(std::string(argv[2]));
             step_cost = std::stoi(std::string(argv[3]));
-            assert(wall_cost < 0 || wall_cost_decay <= 0 || step_cost < 0);
+            assert(wall_cost >= 0 || wall_cost_decay > 0 || step_cost >= 0);
         }
         catch(...) {
             std::cout << "invalid arguments provided: wall_cost and step_cost"
