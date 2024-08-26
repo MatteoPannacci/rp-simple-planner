@@ -30,17 +30,22 @@ CostMap::CostMap(const nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cos
         for(int j = 0; j < width; j++) {
             if(grid.data[i*width+j] == 100) {
                 set(j,height-i-1, wall_cost);
+            } 
+        }
+    }
+
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(grid.data[i*width+j] == 100) {
                 propagate_wall_cost(j,height-i-1);
             } 
         }
     }
 
+
     reset(Eigen::Vector2f(origin.position.x, origin.position.y), resolution);
 
 }
-
-
-
 
 
 CostMap::~CostMap() {
@@ -77,19 +82,19 @@ void CostMap::propagate_wall_cost(int r, int c) {
     }
     else {
         int curr = cost(r,c);
-        if(cost(r+1,c) < curr) {
+        if(cost(r+1,c) < curr-wall_cost_decay) {
             set(r+1,c, curr-wall_cost_decay);
             propagate_wall_cost(r+1,c);
         }
-        if(cost(r-1,c) < curr) {
+        if(cost(r-1,c) < curr-wall_cost_decay) {
             set(r-1,c, curr-wall_cost_decay);
             propagate_wall_cost(r-1,c);
         }
-        if(cost(r,c+1) < curr) {
+        if(cost(r,c+1) < curr-wall_cost_decay) {
             set(r,c+1, curr-wall_cost_decay);
             propagate_wall_cost(r,c+1);
         }
-        if(cost(r,c-1) < curr) {
+        if(cost(r,c-1) < curr-wall_cost_decay) {
             set(r,c-1, curr-wall_cost_decay);
             propagate_wall_cost(r,c-1);
         } 
