@@ -33,7 +33,7 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 1)  setup the ROS environment
 
         source /opt/ros/noetic/setup.bash
-
+class
 2)  go to the simple_planner_ws directory
 
 3)  add the package to the catkin setup directories
@@ -66,5 +66,6 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 To compile and run the code the following are required:
 
 *   [ROS noetic](https://wiki.ros.org/noetic)
+*   [OpenCV](https://opencv.org)
 *   [The ROS Navigation Stack](https://github.com/ros-planning/navigation) (for the map_server node)
 *   [justinhj's A* implementation](https://github.com/justinhj/astar-algorithm-cpp) (for the stlastar.h)
