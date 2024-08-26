@@ -26,22 +26,21 @@ CostMap::CostMap(const nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cos
         data[i] = new int[height]();
     }
 
+    std::queue<std::array<int,2>> queue;
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             if(grid.data[i*width+j] == 100) {
                 set(j,height-i-1, wall_cost);
+                queue.push(std::array<int,2>{j,height-i-1});
             } 
         }
     }
 
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            if(grid.data[i*width+j] == 100) {
-                propagate_wall_cost(j,height-i-1);
-            } 
-        }
+    while(!queue.empty()) {
+        std::array<int,2> coords = queue.front();
+        queue.pop();
+        propagate_wall_cost(coords[0], coords[1]);
     }
-
 
     reset(Eigen::Vector2f(origin.position.x, origin.position.y), resolution);
 
