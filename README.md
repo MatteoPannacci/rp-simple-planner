@@ -30,33 +30,33 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 
 ### How to use
 
-1)  setup the ROS environment
+1)  setup the ROS environment class
 
         source /opt/ros/noetic/setup.bash
-class
-2)  go to the simple_planner_ws directory
+    
+3)  go to the simple_planner_ws directory
 
-3)  add the package to the catkin setup directories
+4)  add the package to the catkin setup directories
 
         source ./devel/setup.bash
 
-4)  run the roscore node
+5)  run the roscore node
 
         roscore
 
-5)  run the stage_ros simulator node with the provided .world file
+6)  run the stage_ros simulator node with the provided .world file
 
         rosrun stage_ros stageros ./data/cappero.world
 
-6)  run the map_server map publisher node with the provided .yaml file
+7)  run the map_server map publisher node with the provided .yaml file
 
         rosrun map_server map_server ./data/cappero.yaml
 
-7)  run the goal_publisher_node node with the coordinates of the destination
+8)  run the goal_publisher_node node with the coordinates of the destination
 
         rosrun simple_planner goal_publisher_node \<goal_x\> \<goal_y\> \<frequency\>
 
-8)  run the simple_planner_node node with the parameters for the planning
+9)  run the simple_planner_node node with the parameters for the planning
 
         rosrun simple_planner simple_planner_node \<wall_cost\> \<wall_cost_decay\> \<step_cost\>
         
