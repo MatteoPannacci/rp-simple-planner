@@ -19,9 +19,8 @@ Implementation of a simple 2D planner node for ROS in C++. This project is part 
 
 7)  run the simple_planner_node node
 
-        ```
         rosrun simple_planner simple_planner_node \<wall_cost\> \<wall_cost_decay\> \<step_cost\>
-        ```
+        
 
 ## Requirements
 
