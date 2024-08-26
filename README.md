@@ -30,7 +30,7 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 
 ### How to use
 
-1)  setup the ROS environment class
+1)  setup the ROS environment
 
         source /opt/ros/noetic/setup.bash
     
