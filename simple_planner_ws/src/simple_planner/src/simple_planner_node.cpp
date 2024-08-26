@@ -20,12 +20,21 @@ int main(int argc, char** argv) {
         step_cost = 1;
     }
     else if(argc == 4) {
-        wall_cost = std::stoi(std::string(argv[1]));
-        wall_cost_decay = std::stoi(std::string(argv[2]));
-        step_cost = std::stoi(std::string(argv[3]));
+        try {
+            wall_cost = std::stoi(std::string(argv[1]));
+            wall_cost_decay = std::stoi(std::string(argv[2]));
+            step_cost = std::stoi(std::string(argv[3]));
+            assert(wall_cost < 0 || wall_cost_decay <= 0 || step_cost < 0);
+        }
+        catch(...) {
+            std::cout << "invalid arguments provided: wall_cost and step_cost"
+                         "should be a non-negative integer while wall_cost_decay"
+                         "should be a striclty positive integer" << std::endl;
+            return 0;
+        }
     }
     else {
-        std::cout << "follow this format: 'simple_planner node <wall_cost>"
+        std::cout << "follow this format: 'simple_planner node <wall_cost> "
                      "<wall_cost_decay> <step_cost>'." << std::endl;
         std::cout << "otherwise don't specify parameters to use the default values:" 
                      "wall_cost=10, wall_cost_decay=1, step_cost=1" << std::endl;
@@ -72,7 +81,7 @@ int main(int argc, char** argv) {
     else {
         goal_point = (*sharedPtrGoal).pose.position;
         std::cout << "-- goal read --" << std::endl;
-        std::cout << goal_point << std::endl;
+        std::cout << goal_point.x << " " << goal_point.y << std::endl;
     }
 
     // read the start
@@ -93,7 +102,7 @@ int main(int argc, char** argv) {
     start_point.y = transform.getOrigin().getY();
     start_point.z = transform.getOrigin().getZ();
     std::cout << "-- start read --" << std::endl;
-    std::cout << start_point << std::endl;
+    std::cout << start_point.x << " " << start_point.y << std::endl;
 
 
     // PLANNING //
@@ -107,7 +116,6 @@ int main(int argc, char** argv) {
     // find path
     planner.find_path();
     nav_msgs::Path path = planner.get_path();
-
     if(path.poses.size() == 0) {
         std::cout << "path not found" << std::endl;
     }
