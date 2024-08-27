@@ -48,7 +48,8 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 
         rosrun stage_ros stageros ./data/cappero.world
 
-7)  run the map_server map publisher node with the provided .yaml file
+7)  run the map_server map publisher node with the provided .yaml file 
+(Note that the .world and .yaml file should have the same center, resolution and orientation but they uses different notations. While in the .world file we specify the coordinates of the of the image w.r.t the center of the map, in the .yaml file we specify the coordinates of the lower-left corner of the image w.r.t. the center of the map, same thing for the resolution being pixel/meter on the .world file and meter/pixel on the .yaml file)
 
         rosrun map_server map_server ./data/cappero.yaml
 
