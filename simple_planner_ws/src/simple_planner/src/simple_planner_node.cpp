@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
     // PUBLISHING
     ros::Publisher pub = nh.advertise<nav_msgs::Path>(path_topic, 5);
     ros::Rate loop_rate(0.1);
-    std::cout << "-- publishing path... --" << std::endl;
+    std::cout << "-- publishing path (until interrupted) --" << std::endl;
     while(ros::ok()) {
         pub.publish(path);
         ros::spinOnce();
