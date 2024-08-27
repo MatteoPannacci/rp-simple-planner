@@ -54,11 +54,11 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 
 8)  run the goal_publisher_node node with the coordinates of the destination
 
-        rosrun simple_planner goal_publisher_node \<goal_x\> \<goal_y\> \<frequency\>
+        rosrun simple_planner goal_publisher_node <goal_x> <goal_y> <frequency>
 
 9)  run the simple_planner_node node with the parameters for the planning
 
-        rosrun simple_planner simple_planner_node \<wall_cost\> \<wall_cost_decay\> \<step_cost\>
+        rosrun simple_planner simple_planner_node <wall_cost> <wall_cost_decay> <step_cost>
         
 
 ### Requirements
