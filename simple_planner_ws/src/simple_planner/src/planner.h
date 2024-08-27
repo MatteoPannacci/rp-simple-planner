@@ -25,9 +25,9 @@ public:
     CostMap(nav_msgs::OccupancyGrid grid, int wall_cost, int wall_cost_decay, int step_cost);
     ~CostMap();
 
-    int cost(int r, int c);
-    void set(int r, int c, int value);
-    void propagate_wall_cost(int r, int c);
+    int cost(int x, int y);
+    void set(int x, int y, int value);
+    void propagate_wall_cost(int x, int y);
 
 };
 
@@ -36,12 +36,12 @@ class SearchNode {
 
 public:
 
-    int r;
-    int c;
+    int x;
+    int y;
     CostMap* map;
 
     SearchNode();
-    SearchNode(int r, int c, CostMap* map);
+    SearchNode(int x, int y, CostMap* map);
     float GoalDistanceEstimate(SearchNode& goal);
     bool IsGoal(SearchNode& goal);
     bool GetSuccessors(AStarSearch<SearchNode>* astarsearch, SearchNode* parent);
