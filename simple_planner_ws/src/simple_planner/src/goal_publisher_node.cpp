@@ -5,18 +5,27 @@
 
 int main(int argc, char** argv) {
 
-    double x,y,z,rate;
+    double x,y,rate;
 
     // read input
-    if(argc < 5) {
-        std::cout << "follow this format: goal_publisher_node <x> <y> <z> <rate>" << std::endl;
+    if(argc < 4) {
+        std::cout << "follow this format: goal_publisher_node <x> <y> <rate>" << std::endl;
         return 0;
     }
     else {
-        x = std::stod(std::string(argv[1]));
-        y = std::stod(std::string(argv[2]));
-        z = std::stod(std::string(argv[3]));
-        rate = std::stod(std::string(argv[4]));
+        try {
+            x = std::stod(std::string(argv[1]));
+            y = std::stod(std::string(argv[2]));
+            rate = std::stod(std::string(argv[3]));
+            assert(rate >= 0);
+        }
+        catch(...) {
+            std::cout << "invalid arguments provided: x and y should be floating"
+                         "point numbers while rate should be a positive floating"
+                         "point number, or 0 to send the message once" << std::endl;
+            return 0;
+        }
+
     }
 
     // initialize the node
@@ -35,7 +44,7 @@ int main(int argc, char** argv) {
     msg.header.seq = 0;
     msg.pose.position.x = x;
     msg.pose.position.y = y;
-    msg.pose.position.z = z;
+    msg.pose.position.z = 0;
     msg.pose.orientation.w = 1;
 
 
@@ -53,7 +62,7 @@ int main(int argc, char** argv) {
             pub.publish(msg);
             ros::spinOnce();
             loop_rate.sleep();
-            std::cout << "-- message published " << std::to_string(msg.header.seq) << " --" << std::endl;
+            std::cout << "-- message n. " << std::to_string(msg.header.seq) << " published --" << std::endl;
             msg.header.seq += 1;
         }
     }
