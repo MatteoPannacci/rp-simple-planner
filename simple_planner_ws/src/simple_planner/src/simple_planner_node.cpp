@@ -69,24 +69,24 @@ int main(int argc, char** argv) {
         std::cout << "-- map read --" << std::endl;
     }
 
-    // read the goal
+    // read the goal position
     geometry_msgs::Point goal_point;
-    std::cout << "-- waiting for goal --" << std::endl;
+    std::cout << "-- waiting for goal position --" << std::endl;
     auto sharedPtrGoal = ros::topic::waitForMessage<geometry_msgs::PoseStamped>(goal_topic, nh);
     if(sharedPtrGoal == NULL) {
-        std::cout << "-- no goal received --" << std::endl;
+        std::cout << "-- no goal position received --" << std::endl;
         std::cout << "-- terminating --" << std::endl;
         return 0;
     }
     else {
         goal_point = (*sharedPtrGoal).pose.position;
-        std::cout << "-- goal read --" << std::endl;
-        std::cout << goal_point.x << " " << goal_point.y << std::endl;
+        std::cout << "-- goal position read --" << std::endl;
+        std::cout << "goal position: (" << goal_point.x << " " << goal_point.y << ")" << std::endl;
     }
 
-    // read the start
+    // read the start position
     geometry_msgs::Point start_point;
-    std::cout << "-- waiting for start --" << std::endl;
+    std::cout << "-- waiting for start position --" << std::endl;
     tf::StampedTransform transform;
     tf::TransformListener listener;
     try {
@@ -94,15 +94,15 @@ int main(int argc, char** argv) {
         listener.lookupTransform(target, source, ros::Time(0), transform);
     }
     catch(...) {
-        std::cout << "-- no start received --" << std::endl;
+        std::cout << "-- no start position received --" << std::endl;
         std::cout << "-- terminating --" << std::endl;
         return 0;
     }
     start_point.x = transform.getOrigin().getX();
     start_point.y = transform.getOrigin().getY();
     start_point.z = transform.getOrigin().getZ();
-    std::cout << "-- start read --" << std::endl;
-    std::cout << start_point.x << " " << start_point.y << std::endl;
+    std::cout << "-- start position read --" << std::endl;
+    std::cout << "start position: (" << start_point.x << " " << start_point.y << ")" << std::endl;
 
 
     // PLANNING //
@@ -114,10 +114,15 @@ int main(int argc, char** argv) {
     planner.set_goal(goal_point);
 
     // find path
+    std::cout << "-- starting planning --" << std::endl;
     planner.find_path();
+    std::cout << "-- finishing planning --" << std::endl;
     nav_msgs::Path path = planner.get_path();
     if(path.poses.size() == 0) {
         std::cout << "path not found" << std::endl;
+    }
+    else {
+        std::cout << "path found" << std::endl;
     }
 
 
@@ -148,6 +153,7 @@ int main(int argc, char** argv) {
     drawPath(canvas, grid_path, cv::viz::Color::amethyst());
 
     // create image
+    std::cout << "-- visualizing path --" << std::endl;
     showCanvas(canvas, 0);
     
 }
