@@ -49,8 +49,10 @@ int main(int argc, char** argv) {
     std::string map_topic = "/map";
     std::string goal_topic = "/move_base_simple/goal";
     std::string start_topic = "/tf";
+    std::string path_topic = "/move_base_simple/path";
     std::string target = "base_link";
     std::string source = "odom";
+    
 
 
     // READING INPUT MESSAGES //
@@ -155,5 +157,19 @@ int main(int argc, char** argv) {
     // create image
     std::cout << "-- visualizing path --" << std::endl;
     showCanvas(canvas, 0);
-    
+
+
+    // PUBLISHING
+    ros::Publisher pub = nh.advertise<nav_msgs::Path>(path_topic, 5);
+    ros::Rate loop_rate(0.1);
+    std::cout << "-- publishing path... --" << std::endl;
+    while(ros::ok()) {
+        pub.publish(path);
+        ros::spinOnce();
+        loop_rate.sleep();
+        path.header.seq += 1;
+    }
+
+    std::cout << "-- terminating --" << std::endl;
+
 }
