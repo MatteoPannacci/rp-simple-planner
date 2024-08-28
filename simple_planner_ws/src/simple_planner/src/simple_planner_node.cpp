@@ -54,7 +54,6 @@ int main(int argc, char** argv) {
     std::string source = "odom";
     
 
-
     // READING INPUT MESSAGES //
 
     // read the map

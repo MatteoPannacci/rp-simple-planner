@@ -48,7 +48,6 @@ public:
     float GetCost(SearchNode& node);
     bool IsSameState(SearchNode& other);
     size_t Hash();
-    void PrintNodeInfo();
 
 };
 
