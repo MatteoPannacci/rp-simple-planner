@@ -32,11 +32,11 @@ define topurg ranger
 define erratic position
 (
   #size [0.415 0.392 0.25]
-  size [0.150 0.150 0.150]
+  size [0.150 0.150 0.500]
   origin [-0.050 0.000 0.000 0.000]
   gui_nose 1
   drive "diff"
-  topurg(pose [ 0.050 0.000 0.000 0.000 ])
+  topurg(pose [ 0.050 0.000 -0.400 0.000 ])
 )
 
 # define some obstacle
@@ -87,7 +87,7 @@ floorplan
 (
    name "diag_1"     
    bitmap "cappero.png"
-   size   [106.913 49.3527 0.5]
+   size   [106.913 49.3527 0.2]
    pose   [0 0 0 0]
 )
 

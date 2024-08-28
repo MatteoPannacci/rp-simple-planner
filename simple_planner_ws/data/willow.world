@@ -31,11 +31,11 @@ define topurg ranger
 define erratic position
 (
   #size [0.415 0.392 0.25]
-  size [0.350 0.350 0.250]
+  size [0.350 0.350 0.500]
   origin [-0.050 0.000 0.000 0.000]
   gui_nose 1
   drive "diff"
-  topurg(pose [ 0.050 0.000 0.000 0.000 ])
+  topurg(pose [ 0.050 0.000 -0.400 0.000 ])
 )
 
 define floorplan model
@@ -74,7 +74,7 @@ floorplan
 ( 
   name "willow"
   bitmap "willow.pgm"
-  size [54.000 58.700 0.500]
+  size [54.000 58.700 0.2]
   pose [ 0 0 0 0 ]
 )
 
