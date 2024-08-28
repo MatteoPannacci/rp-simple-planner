@@ -5,9 +5,10 @@
 
 int main(int argc, char** argv) {
 
-    double x,y,rate;
+    // INITIALIZATION //
 
     // read input
+    double x,y,rate;
     if(argc < 4) {
         std::cout << "follow this format: goal_publisher_node <x> <y> <rate>" << std::endl;
         return 0;
@@ -35,6 +36,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     std::string goal_topic = "/move_base_simple/goal";
 
+
+    // PUBLISHING //
+
     // publish the goal topic
     ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>(goal_topic, 5);
 
@@ -47,16 +51,15 @@ int main(int argc, char** argv) {
     msg.pose.position.z = 0;
     msg.pose.orientation.w = 1;
 
-
+    // send the message once
     if(rate ==  0) {
-        // send the message once
         pub.publish(msg);
         ros::spinOnce();
         std::cout << "-- message published --" << std::endl;
     }
 
+    // send the message at the specified frequency
     else {
-        // send the message at the specified rate
         ros::Rate loop_rate(rate);
         while(ros::ok()) {
             pub.publish(msg);
