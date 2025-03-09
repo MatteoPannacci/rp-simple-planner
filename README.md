@@ -1,8 +1,11 @@
 # rp-simple-planner
 
+Project developed for the course of "Robot Programming" during the MSc in Artificial Intelligence and Robotics at Sapienza University of Rome, A.Y. 2023-2024.
+
+
 ### Summary
 
-Implementation of a simple 2D planner node for ROS in C++. This project is part of the exam of Robot Programming for the Master Degree in Artificial Intelligence and Robotics at Sapienza, academic year 2023/2024.
+Implementation of a simple 2D planner node for ROS in C++.
 
 The repository provides:
 
