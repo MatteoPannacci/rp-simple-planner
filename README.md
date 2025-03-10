@@ -3,7 +3,7 @@
 Project developed for the course of "Robot Programming" during the MSc in Artificial Intelligence and Robotics at Sapienza University of Rome, A.Y. 2023-2024.
 
 
-### Summary
+## Summary
 
 Implementation of a simple 2D planner node for ROS in C++.
 
@@ -18,7 +18,7 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
 /grid_map: set of classes used for the visualization of the path and the transformation between the grid structure and the world coordinates.
 
 
-### Compilation
+## Compilation
 
 1)  setup the ROS environment
 
@@ -31,7 +31,7 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
         catkin build
 
 
-### How to use
+## How to use
 
 1)  setup the ROS environment
 
@@ -65,7 +65,7 @@ simple_planner_node: computes the start position from the 'tf2_msgs/TFMessage' p
         rosrun simple_planner simple_planner_node <wall_cost> <wall_cost_decay> <step_cost>
         
 
-### Requirements
+## Requirements
 
 To compile and run the code the following are required:
 
