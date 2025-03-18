@@ -5,7 +5,7 @@ Project developed for the course of "Robot Programming" during the MSc in Artifi
 
 ## Summary
 
-Implementation of a simple 2D planner node for ROS in C++.
+Implementation of a simple 2D trajectory planner for ROS in C++.
 
 The repository provides:
 
